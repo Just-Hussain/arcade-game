@@ -62,13 +62,24 @@ class Player {
             this.y += 90;
         else if (key === 'up' && this.y > 0)
             this.y -= 90;
+        
+        if (this.y === -60) {
+            if (confirm("YOU WON! restart by clicking ok!")) {
+                this.x = 200;
+                this.y = 300;
+            }
+        }
     }
+    
 }
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 
+const allowedPlayerPos = {
+    
+}
 var allEnemies = [
     new Enemy(1, 200), 
     new Enemy(2, 150), 
@@ -83,10 +94,8 @@ function enemyRandomizer() {
     });
     
     if (oldSize != allEnemies.length) {
-        const allowedPos = [1, 2, 3];
-
-        let randPos = allowedPos[Math.floor(Math.random()*3)];
-        let randSpeed = Math.floor((Math.random() * 135) + 136);
+        let randPos = Math.floor(Math.random()*3)+1;
+        let randSpeed = Math.floor((Math.random() * 150) + 151);
         
         allEnemies.push(new Enemy(randPos, randSpeed));
     }
@@ -96,10 +105,11 @@ var player = new Player();
 
 function checkCollisions() {
     for (let i = 0; i < allEnemies.length; i++) {
-        if (Math.floor(allEnemies[i].x) === Math.floor(player.x)
-            && Math.floor(allEnemies[i].y === Math.floor(player.y))) {
-            console.log("COLLSION")
-        }
+        // if (Math.floor(allEnemies[i].x) === Math.floor(player.x)
+        //     && Math.floor(allEnemies[i].y === Math.floor(player.y))) {
+        //     console.log("COLLSION")
+        // }
+        
     }
 }
 
