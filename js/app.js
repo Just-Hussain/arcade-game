@@ -1,12 +1,11 @@
 // Enemies our player must avoid
 class Enemy {
     constructor(row = 3, speed = 75) {
-        // Variables applied to each of our instances go here,
-        // we've provided one for you to get started
 
         // The image/sprite for our enemies, this uses
         // a helper we've provided to easily load images
         this.sprite = 'images/enemy-bug.png';
+        
         this.x = -150;
         switch(row) {
             case 1: this.y = 220; break;
@@ -15,6 +14,8 @@ class Enemy {
             default: this.y = 50; break;
         }
         this.speed = speed;
+        this.col = -1;
+        this.row = row;
     }
 
     // Update the enemy's position, required method for game
@@ -24,7 +25,24 @@ class Enemy {
         // which will ensure the game runs at the same speed for
         // all computers.
         this.x += this.speed * dt;
+        
         enemyRandomizer();
+        
+        if (this.x > -70 && this.x < 10) {
+            this.col = 1;
+        }
+        else if (this.x > 10 && this.x < 120) {
+            this.col = 2;
+        }
+        else if (this.x > 120 && this.x < 220) {
+            this.col = 3;
+        }
+        else if (this.x > 220 && this.x < 320) {
+            this.col = 4;
+        }
+        else if (this.x > 320 && this.x < 500) {
+            this.col = 5;
+        }
     };
 
     // Draw the enemy on the screen, required method for game
@@ -33,19 +51,17 @@ class Enemy {
     };
 }
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
-
 class Player {   
     constructor() {
         this.sprite = 'images/char-boy.png';
         this.x = 200;
         this.y = 300;
+        this.row = 0;
+        this.col = 3;
     }
 
     update(dt) {
-        //All movement handled in handleInput().
+        //All movement handled in handleInput(), does not depend on dt.
     }
 
     render() {
@@ -54,38 +70,50 @@ class Player {
 
     handleInput(key) {
     
-        if (key === 'left' && this.x > 0) 
+        if (key === 'left' && this.x > 0) {
             this.x -= 100;
-        else if (key === 'right' && this.x < 400)
+            this.col--;
+        }
+        else if (key === 'right' && this.x < 400) {
             this.x += 100;
-        else if (key === 'down' && this.y < 350)
+            this.col++;
+        }
+        else if (key === 'down' && this.y < 350) {
             this.y += 90;
-        else if (key === 'up' && this.y > 0)
+            this.row--;
+        }
+        else if (key === 'up' && this.y > 0) {
             this.y -= 90;
+            this.row++;
+        }
         
+        // Top row, water.
         if (this.y === -60) {
             if (confirm("YOU WON! restart by clicking ok!")) {
-                this.x = 200;
-                this.y = 300;
+                this.reset();
             }
         }
     }
-    
+
+    // Resets by positioning the player back to start.
+    reset() {
+        this.x = 200;
+        this.y = 300;
+        this.row = 0;
+        this.col = 3;
+    }
 }
 
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
-
-const allowedPlayerPos = {
-    
-}
+/* Top row before water is 3, then 2, then 1 */
 var allEnemies = [
-    new Enemy(1, 200), 
+    new Enemy(3, 200), 
     new Enemy(2, 150), 
-    new Enemy(3, 75)
+    new Enemy(1, 75)
 ];
 
+/* Random generatinig by filtering enimes outside of screen and adding a new one
+ * With random attributes.
+ */
 function enemyRandomizer() {
     let oldSize = allEnemies.length;
     
@@ -105,16 +133,14 @@ var player = new Player();
 
 function checkCollisions() {
     for (let i = 0; i < allEnemies.length; i++) {
-        // if (Math.floor(allEnemies[i].x) === Math.floor(player.x)
-        //     && Math.floor(allEnemies[i].y === Math.floor(player.y))) {
-        //     console.log("COLLSION")
-        // }
-        
+        if (allEnemies[i].row === player.row && allEnemies[i].col === player.col) {
+            player.reset();
+        }
     }
 }
 
 // This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
+// Player.handleInput() method.
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
         37: 'left',
@@ -125,4 +151,5 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
 
